@@ -2,10 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, browserHistory } from 'react-router';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 
 import routes from './routes';
+import rootReducer from './rootReducer';
 
 /**
   (state = {}) => state
@@ -13,8 +14,11 @@ import routes from './routes';
   function(state = {}) { return state; };
 **/
 const store = createStore(
-  (state = {}) => state,
-  applyMiddleware(thunk)
+  rootReducer,
+  compose(
+    applyMiddleware(thunk),
+    window.devToolsExtension ? window.devToolsExtension() : f => f
+  )
 );
 
 ReactDOM.render(
