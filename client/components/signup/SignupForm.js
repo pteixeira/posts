@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classnames from 'classnames';
 
 class SignupForm extends Component {
   constructor(props) {
@@ -8,6 +9,8 @@ class SignupForm extends Component {
       email: '',
       password: '',
       passwordConfirmation: '',
+      errors: {},
+      isLoading: false
     };
 
     this.onChange = this.onChange.bind(this);
@@ -21,15 +24,22 @@ class SignupForm extends Component {
   }
 
   onSubmit(e) {
+    this.setState({ errors: {}, isLoading: true })
     e.preventDefault();
-    this.props.userSignupRequest(this.state);
+    this.props.userSignupRequest(this.state).then(
+      () => {}
+    ).catch(errors => {
+      this.setState({ errors: errors.response.data, isLoading: false })
+    });
   }
 
   render() {
+    const { errors } = this.state;
+
     return (
       <form onSubmit={this.onSubmit}>
         <h1>Sign up</h1>
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.username })}>
           <label htmlFor="username" className="control-label">Username</label>
           <input
             type="text"
@@ -37,9 +47,10 @@ class SignupForm extends Component {
             className="form-control"
             value={this.state.username}
             onChange={this.onChange} />
+            { errors.username && <span className="help-block">{errors.username}</span> }
         </div>
 
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.email })}>
           <label htmlFor="Email" className="control-label">Email</label>
           <input
             type="text"
@@ -49,7 +60,7 @@ class SignupForm extends Component {
             onChange={this.onChange} />
         </div>
 
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.password })}>
           <label htmlFor="password" className="control-label">Password</label>
           <input
             type="password"
@@ -59,7 +70,7 @@ class SignupForm extends Component {
             onChange={this.onChange} />
         </div>
 
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.passwordConfirmation })}>
           <label htmlFor="passwordConfirmation" className="control-label">Password confirmation</label>
           <input
             type="password"
@@ -69,7 +80,7 @@ class SignupForm extends Component {
             onChange={this.onChange} />
         </div>
         <div className="form-group">
-          <button className="btn btn-primary btn-lg">Sign up</button>
+          <button className="btn btn-primary btn-lg" disabled={this.state.isLoading}>Sign up</button>
         </div>
       </form>
     );
