@@ -8,6 +8,10 @@ import thunk from 'redux-thunk';
 import routes from './routes';
 import rootReducer from './rootReducer';
 
+import jwt from 'jsonwebtoken';
+import { setCurrentUser } from './actions/authActions';
+import setAuthorizationToken from './utils/setAuthorizationToken';
+
 /**
   (state = {}) => state
   is the same as
@@ -20,6 +24,12 @@ const store = createStore(
     window.devToolsExtension ? window.devToolsExtension() : f => f
   )
 );
+
+// extract this to make cleaner
+if (localStorage.jwtToken) {
+  setAuthorizationToken(localStorage.jwtToken);
+  store.dispatch(setCurrentUser(jwt.decode(localStorage.jwtToken)));
+}
 
 ReactDOM.render(
   <Provider store={store}>
